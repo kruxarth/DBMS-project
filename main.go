@@ -1,14 +1,13 @@
 package main
 
 import (
-	"bufio"
+
 	"fmt"
-	"io"
+	
 	"log"
 	"net"
 	"os"
-	"strconv"
-	"sync"
+	
 )
 
 
@@ -27,6 +26,9 @@ const (
 
 func main(){
 	log.Println("reading config files")
+	conf := readConf("./redis.conf")
+
+	state := NewAppState(conf)
 
 	l, err := net.Listen("tcp", ":6379")
 	if err != nil{
@@ -51,7 +53,7 @@ func main(){
 		v := Value{typ: ARRAY}
 		v.readArray(conn)
 
-		handle(conn, &v)
+		handle(conn, &v, state)
 
 		fmt.Println(v.array)
 		
@@ -64,6 +66,22 @@ func main(){
 
 
 
+type AppState struct{
+	conf *Config
+	aof *Aof
+}
+
+func NewAppState(conf *Config)*AppState{
+	state:= AppState{
+		conf: conf,
+	}
+
+	if conf.aofEnabled{
+		state.aof = NewAof(conf)
+	}
+
+	return &state
+}
 
 
 

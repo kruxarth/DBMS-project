@@ -1,3 +1,11 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Value struct {
 	typ ValueType
 	bulk string
